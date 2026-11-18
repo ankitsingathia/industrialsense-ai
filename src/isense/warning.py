@@ -134,7 +134,8 @@ def alarms(scores: np.ndarray, cal: np.ndarray, start: int, persist: int) -> tup
     return a, thr
 
 
-def adaptive_alarms(scores: np.ndarray, cal: np.ndarray, start: int, persist: int, tau: float) -> np.ndarray:
+def adaptive_alarms(scores: np.ndarray, cal: np.ndarray, start: int, persist: int, tau: float,
+                    return_threshold: bool = False):
     """Like alarms(), but the healthy mean and spread keep learning after the
     reference period, as an exponentially weighted average with time constant
     `tau` snapshots. They learn only from snapshots that are under the current
@@ -144,14 +145,17 @@ def adaptive_alarms(scores: np.ndarray, cal: np.ndarray, start: int, persist: in
     mu, var = float(scores[cal].mean()), float(scores[cal].var())
     a = 1.0 / tau
     over = np.zeros(len(scores), dtype=bool)
+    thr = np.full(len(scores), mu + 3 * np.sqrt(var))
     for i in range(start, len(scores)):
         s = scores[i]
-        over[i] = s > mu + 3 * np.sqrt(var)
+        thr[i] = mu + 3 * np.sqrt(var)
+        over[i] = s > thr[i]
         if not over[i]:
             d = s - mu
             mu += a * d
             var += a * (d * d - var)
-    return persistent(over, persist)
+    alarm = persistent(over, persist)
+    return (alarm, thr) if return_threshold else alarm
 
 
 def lead_time_h(hours: np.ndarray, alarm: np.ndarray) -> float:

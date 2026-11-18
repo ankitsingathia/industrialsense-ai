@@ -5,3 +5,5 @@ __pycache__/
 *.onnx
 models/
 firmware/wdcnn_weights.h
+dashboard/web/node_modules/
+dashboard/web/dist/

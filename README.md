@@ -6,7 +6,23 @@ Bearing and motor fault early warning from vibration and motor current, aimed at
 
 This started as a proposal I made at work: use the data a plant already records to catch equipment faults before they trip a line. Plant data stays inside the plant, so this repo builds and tests the method on public bearing datasets. Every number below comes from a script in this repo.
 
-**Status (18 Nov 2026):** stages 1 to 4 of 5 are done: diagnosis on CWRU, early warning on the NASA IMS run-to-failure tests, vibration vs motor current on Paderborn, and an int8 CNN in C sized for a Cortex-M4. The dashboard (stage 5) is next; see [Roadmap](#roadmap).
+**Status (18 Nov 2026):** all five stages are done:
+1. diagnosis on CWRU
+2. early warning on the NASA IMS run-to-failure tests
+3. vibration vs motor current on Paderborn
+4. an int8 CNN in C, sized for a Cortex-M4
+5. a dashboard that replays the IMS tests
+
+The open items are in [Roadmap](#roadmap) and [Limits](#limits).
+
+| Stage | Headline result |
+|---|---|
+| 1 | Envelope features halve the leave-one-load-out errors on CWRU (macro-F1 0.949 → 0.974). The RMS alarm false-alarms on 100% of healthy windows at an unseen load. |
+| 2 | Early warning on 4 natural failures: the RMS alarm with a held-out threshold gives 74–159 h of warning. Learned detectors don't beat it. |
+| 2b | A drift-following threshold cuts false alarms 91% (117 → 10) and still catches all 4 failures (49–120 h of warning). |
+| 3 | On unseen Paderborn bearings, scores fall from 0.997 (random split) to 0.42–0.62. Defect-line features generalise best. Motor current's score doesn't come from bearing physics. |
+| 4 | The CNN matches the features on average (0.969–0.986). In int8 C it is bit-exact with the reference: 23.9 KB flash, 8 KB RAM. |
+| 5 | The dashboard explains each alarm by the features that moved. It named the right defect for 1 of the 4 failures. |
 
 ---
 
@@ -61,7 +77,7 @@ I measured what the bug would have done. Without the fix the F1 scores are withi
 
 ## Stage 2 results: early warning on NASA IMS
 
-Three tests in which four Rexnord ZA-2115 bearings on one shaft ran at 2,000 rpm until bearings failed on their own: 9,464 one-second snapshots at 20 kHz, one every 10 minutes, across 12 bearings. Four bearings failed (inner race, roller, and outer race twice); the other eight survived.
+Three tests in which four Rexnord ZA-2115 bearings on one shaft ran at 2,000 rpm until bearings failed on their own: 9,461 one-second snapshots at 20 kHz (3 more, taken after the rig had stopped, are dropped), one every 10 minutes, across 12 bearings. Four bearings failed (inner race, roller, and outer race twice); the other eight survived.
 
 Each detector sees only one bearing's first 48 monitored hours. It is fitted on the first 32 hours, and its threshold (mean + 3σ) is set on the next 16 hours, which it has not seen. An alarm needs 3 snapshots in a row over the threshold (30 minutes). Every detector gets exactly this rule.
 
@@ -75,24 +91,24 @@ Each detector sees only one bearing's first 48 monitored hours. It is fitted on 
 |---|---|---|---|
 | Test 1, bearing 3, inner race | 86 h | 79 h | 82 h |
 | Test 1, bearing 4, roller | 159 h | never stays on | 156 h |
-| Test 2, bearing 1, outer race | 75 h | 75 h | 75 h |
-| Test 3, bearing 3, outer race | 81 h | 59 h | 352 h* |
+| Test 2, bearing 1, outer race | 74.5 h | 74.5 h | 74.5 h |
+| Test 3, bearing 3, outer race | 83 h | 59 h | 352 h* |
 
 **False alarms on the eight bearings that survived:**
 
 | | RMS alarm | Isolation Forest | Autoencoder |
 |---|---|---|---|
 | Alarms | 117 | 13 | 202 |
-| Bearing-days watched | 137.5 | 145.0 | 103.8 |
+| Bearing-days watched | 137.3 | 145.0 | 103.8 |
 | Per bearing per week | 6.0 | 0.6 | 13.6 |
 
 \* The autoencoder's 352 h in test 3 is not a real early catch. Over the same weeks it was in alarm 87% of the time on a bearing that survived.
 
 **What this shows:**
 
-- **The RMS alarm is a hard baseline to beat on this data.** Once its threshold is set on held-out data and it needs 30 minutes of persistence, it gave 75–159 h of warning on all four failures. Neither learned detector beat it on lead time.
+- **The RMS alarm is a hard baseline to beat on this data.** Once its threshold is set on held-out data and it needs 30 minutes of persistence, it gave 74–159 h of warning on all four failures. Neither learned detector beat it on lead time.
 - **RMS's false alarms come almost all from one bearing.** 116 of its 117 are on test 3, bearing 4. Over six weeks, the level on that bearing, which survived the test, crept up about 5–8%, and a threshold learned in the first two days cannot follow slow drift.
-- **Isolation Forest cut false alarms by 89% (117 → 13), at a price.** It never held an alarm on the roller failure, and it gave 22 h less warning on test 3.
+- **Isolation Forest cut false alarms by 89% (117 → 13), at a price.** It never held an alarm on the roller failure, and it gave 24 h less warning on test 3.
 - **The autoencoder was the least stable of the three.** With a few hundred training snapshots, four bottleneck units still fit the healthy period too closely.
 - **The setup moved the results more than the model did.** The sweep in `results/early_warning.json` shows it:
   - With a 24 h reference, every detector alarms on test 1 right after its six-day stop: 657 h of "warning" that is really the restart.
@@ -106,23 +122,24 @@ Nearly all of RMS's false alarms come from slow drift, so the next step was to l
 | | Fixed RMS threshold | Drift-following RMS | RMS and Isolation Forest must agree |
 |---|---|---|---|
 | Failures caught (alarm stays on) | 4 of 4 | **4 of 4** | 3 of 4 |
-| Lead time | 75–159 h | 49–120 h | 59–77 h |
+| Lead time | 74–159 h | 49–120 h | 59–77 h |
 | False alarms on surviving bearings | 117 | **10** | 7 |
 
-The drift-following threshold cuts false alarms by 91% and still catches all four failures, at a cost of 22–39 h of warning on three of them. Test 2 is unchanged at 75 h. The time constant sets the trade-off:
+The drift-following threshold cuts false alarms by 91% and still catches all four failures, at a cost of 24–39 h of warning on three of them. Test 2 is unchanged at 74.5 h. The time constant sets the trade-off:
 
 - 24 h gives 6 false alarms, but only 12 h of warning on test 1's inner race.
 - 168 h gives 15 false alarms and 59–148 h of warning.
 
 A fault that grows more slowly than the time constant would be absorbed. That is the limit of this method, and it is why the time constant has to come from how fast real faults grow on the machine.
 
-**How the false alarms are counted.** Every alarm on a surviving bearing counts as false, but only until the failing bearing's alarm latches, by the same detector. After that point it isn't false: all four bearings share the shaft. In test 2 the BPFO envelope line grew 8.7× on the failed bearing, and 1.9–5.2× on its three healthy neighbours.
+**How the false alarms are counted.** Every alarm on a surviving bearing counts as false, but only until the failing bearing's alarm latches, by the same detector. After that point it isn't false: all four bearings share the shaft. In test 2 the BPFO envelope line grew 8.8× on the failed bearing, and 1.6–5.1× on its three healthy neighbours.
 
 Reproduce: `python scripts/ims_features.py`, then `python scripts/run_early_warning.py`.
 
 ### What the IMS audit found
 
 - **The archive does not match its readme on test 3.** `3rd_test.rar` unpacks to a folder named `4th_test`, with 6,324 files running to 18 April 2004. The readme lists 4,448 files ending on 4 April. The extra two weeks hold the failure: all four RMS levels are flat until the last few days of the full record. A pipeline that trusted the readme's end date would have watched test 3 and seen nothing fail.
+- **The last snapshots of tests 2 and 3 were taken after the rig stopped.** Every channel reads about 0.001 g (2 snapshots in test 2, 1 in test 3). They are dropped, so lead time runs to the last snapshot with the machine running. The dashboard found this: its cards showed 0.001 g at the end of test 2.
 - **Test 1 stops for six days after its first day.** The 148-hour gap follows the first 24 hours. A reference period that ends before the stop has never seen the machine restart. False alarms are counted per hour watched, not calendar time.
 - **The bearing geometry is not in the readme.** The defect frequencies come from the dimensions in its reference paper (Qiu et al., 2006). A test checks them against the published values: BPFO 236.4 Hz, BPFI 296.9 Hz.
 
@@ -205,6 +222,29 @@ The flash and RAM numbers come from `arm-none-eabi-gcc` 15.2 and its stack-usage
 
 Reproduce: `python scripts/run_cnn.py`, then `run_edge.py`, then `run_firmware.py` (needs `gcc` and `arm-none-eabi-gcc` on PATH).
 
+## Stage 5: dashboard
+
+![Dashboard replaying IMS test 2](docs/dashboard.png)
+
+A FastAPI backend and a React frontend replay the three IMS tests through the stage 2b alarm. The page states that it is recorded test-rig data, not a live plant. It shows:
+- each bearing's status at the replay time, with its RMS as a share of the threshold and how long the alarm has been on
+- RMS against the drift-following threshold, with alarm spans, the learning period and gaps where the rig was stopped (hover for values; a table view is one click away)
+- an alarm log: for each alarm, the three features that had moved furthest from that bearing's own healthy reference, in standard deviations
+
+**How the alarm explanations held up.** On test 2 the alarm that latched on the failing bearing is explained by the outer-race defect line (+10σ and +9.6σ on its second and first harmonics), and that bearing failed on its outer race. On the other three failures the top features are broadband energy (1–6 kHz), not the matching defect line. So the explanation names the right defect on 1 of 4 failures. It says *what moved*, not *what failed*.
+
+Building it also surfaced a data problem. The cards showed 0.001 g at the end of test 2, because the last snapshots were recorded after the rig had stopped. Those snapshots are now dropped everywhere, and the stage 2 numbers above include that fix.
+
+Run it:
+
+```bash
+pip install fastapi uvicorn
+cd dashboard/web && npm install && npm run build && cd ../..
+python -m uvicorn api:app --app-dir dashboard --port 8765   # then open http://localhost:8765
+```
+
+The replay data (`dashboard/data`, 0.7 MB) is committed, so the dashboard runs without the 6 GB dataset. `scripts/build_dashboard_data.py` regenerates it.
+
 ## How the envelope features work
 
 A local defect produces a short impact each time a ball passes it. The impact rings a structural resonance in the kHz range, so the defect rate appears as amplitude modulation of that resonance, not as a clear line in the raw spectrum. The pipeline:
@@ -233,10 +273,12 @@ Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA progn
 
 ## Limits
 
-- Leave-one-load-out still uses the same physical seeded bearings at every load, so it tests robustness to load, not to a new machine. The real test of generalisation is training on one dataset and testing on another (stage 3).
-- The 2–5 kHz band is fixed. Choosing it per machine (spectral kurtosis) is on the list.
+- On CWRU, leave-one-load-out still uses the same seeded bearings at every load, so it tests robustness to load, not to a new bearing. Stage 3 tests unseen bearings, and there the scores fall to 0.42–0.62. Training on one dataset and testing on another is not done yet (stage 3b).
+- The envelope band is fixed: 2–5 kHz on CWRU, 2–8 kHz on IMS and Paderborn. Choosing it per machine (the kurtogram) is on the list.
 - Seeded EDM faults are not natural wear. Stage 2 uses a bearing that wore out on its own.
 - Four failures is a small sample. The stage 2 tables describe these four runs, not a failure rate.
+- The int8 kernel's flash and RAM come from the compiler. It has not run on a board, so its latency on a Cortex-M4 is unknown.
+- Stage 3 has 5 bearings per class. That is enough to show that a random split misleads, not enough to train a classifier a plant should trust.
 - "End of test" stands in for failure time. The rig was stopped when a bearing was judged failed, so lead time is measured to that call, not to a seizure.
 
 ## Roadmap
@@ -249,6 +291,7 @@ Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA progn
 | 3 | Paderborn: vibration vs motor current vs both, tested on unseen bearings | done |
 | 3b | Train on one dataset, test on another (CWRU and Paderborn use different bearings and rigs) | planned |
 | 4 | 1D CNN, int8 quantisation, ONNX Runtime latency, int8 C kernel sized for a Cortex-M4 (no physical board) | done |
-| 5 | React + FastAPI dashboard: machine health, alarm timeline, which band triggered each alarm | planned |
+| 5 | React + FastAPI dashboard: machine health, alarm timeline, which band triggered each alarm | done |
+| next | Time the int8 kernel on a real Cortex-M4 board; choose the envelope band per machine (kurtogram); more bearings per class for stage 3 | planned |
 
 Design choices and rejected alternatives are in [DECISIONS.md](DECISIONS.md).

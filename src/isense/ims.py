@@ -61,6 +61,22 @@ def snapshot_files(folder: Path) -> list[Path]:
     return sorted(files, key=timestamp)
 
 
+STOPPED_G = 0.01  # every channel below this RMS: the rig was not running
+
+
+def load_features(path: Path):
+    """Feature table from scripts/ims_features.py, without snapshots taken
+    after the rig stopped. Test 2 ends with 2 such snapshots and test 3 with 1:
+    every channel reads about 0.001 g. Lead time is measured to the last
+    snapshot with the machine running.
+
+    Returns hours, X (snapshots, bearings, features), names, files, n_dropped.
+    """
+    d = np.load(path)
+    running = (d["X"][:, :, 0] >= STOPPED_G).any(axis=1)
+    return d["hours"][running], d["X"][running], list(d["names"]), d["files"][running], int((~running).sum())
+
+
 def read_snapshot(path: Path) -> np.ndarray:
     """(20480, n_channels) array in g."""
     return pd.read_csv(path, sep=r"\s+", header=None, engine="c", dtype=np.float64).to_numpy()

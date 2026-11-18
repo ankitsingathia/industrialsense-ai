@@ -41,8 +41,8 @@ def detectors():
 
 
 def load(test: str):
-    d = np.load(ROOT / f"data/processed/ims_{test}.npz")
-    return d["hours"], d["X"], list(d["names"])
+    hours, X, names, _, _ = ims.load_features(ROOT / f"data/processed/ims_{test}.npz")
+    return hours, X, names
 
 
 def run_test(test: ims.Test, ref_hours: float, persist: int, keep_scores=False):

@@ -106,15 +106,22 @@ def test_test2_has_the_documented_shape():
 def test_failed_outer_race_shows_bpfo_in_the_envelope():
     """Test 2, bearing 1 failed on the outer race. Its envelope BPFO line grows
     the most of the four from the first day to the last six hours (measured
-    8.7x). The others grow too (1.9-5.2x): they share the shaft."""
-    d = np.load(PROCESSED / "ims_test2.npz")
-    names, X, hours = list(d["names"]), d["X"], d["hours"]
+    8.8x). The others grow too (1.6-5.1x): they share the shaft."""
+    hours, X, names, _, _ = ims.load_features(PROCESSED / "ims_test2.npz")
     k = names.index("BPFO_h1")
     first, last = hours < 24, hours > hours[-1] - 6
     growth = X[last, :, k].mean(axis=0) / X[first, :, k].mean(axis=0)
     assert growth.argmax() == 0 and growth[0] > 8
     assert growth[0] > 1.5 * growth[1:].max()
     assert (growth[1:] > 1.5).all()
+
+
+@needs_ims
+@pytest.mark.parametrize("test,n", [("test1", 0), ("test2", 2), ("test3", 1)])
+def test_snapshots_after_the_rig_stopped_are_dropped(test, n):
+    hours, X, _, _, dropped = ims.load_features(PROCESSED / f"ims_{test}.npz")
+    assert dropped == n
+    assert (X[:, :, 0].max(axis=1) >= ims.STOPPED_G).all()
 
 
 @needs_ims

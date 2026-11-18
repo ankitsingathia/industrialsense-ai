@@ -43,7 +43,7 @@ Counting from the first alarm would reward a detector that fires early and at ra
 
 ## Stage 2: false alarms stop where the fault is real
 
-All four bearings sit on one shaft, so a failing bearing shows up on its neighbours' sensors. In test 2 their BPFO lines grew 1.9–5.2×. Counting those late alarms as false would punish a detector for being right. False alarms on a surviving bearing are counted until the failing bearing's alarm latches, by the same detector. Because of this cut-off, the number of bearing-days watched differs a little between detectors, and the README shows it next to each count.
+All four bearings sit on one shaft, so a failing bearing shows up on its neighbours' sensors. In test 2 their BPFO lines grew 1.6–5.1×. Counting those late alarms as false would punish a detector for being right. False alarms on a surviving bearing are counted until the failing bearing's alarm latches, by the same detector. Because of this cut-off, the number of bearing-days watched differs a little between detectors, and the README shows it next to each count.
 
 ## Stage 2b: learn only from snapshots under the threshold
 
@@ -87,3 +87,15 @@ Activation ranges for int8 come from 256 windows drawn from the three training l
 ## RMS alarm as the baseline
 
 The baseline is what a plant actually runs: an overall-vibration threshold. Beating it is the claim that matters. Beating a deliberately weak model would mean nothing.
+
+## Stage 5: precomputed replay data, committed
+
+The dashboard reads one JSON file per test (0.7 MB in total), built from the feature tables by `scripts/build_dashboard_data.py`. Committing it means anyone can run the dashboard without the 6 GB IMS download. The API stays a thin reader, and the alarm logic lives in one place, `isense.warning`, the same code the stage 2 results come from.
+
+## Stage 5: no chart library
+
+The page has one chart type: a line, a threshold and shaded spans. Hand-written SVG in about 150 lines is smaller than any charting dependency, and every mark is under control: line breaks where the rig was stopped, the replay cursor, the hover crosshair. The page also offers the same data as a table.
+
+## Stage 5: explanations in standard deviations from the bearing's own reference
+
+"What moved" is measured against that bearing's first 32 hours, the same period its detector was fitted on, in units of its own spread. A raw value would not compare across bearings or features. A z-score says how unusual the value is for this bearing. It does not say which component failed, and the README reports how often the top feature matched the real failure (1 of 4).
