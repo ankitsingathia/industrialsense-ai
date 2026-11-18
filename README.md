@@ -20,7 +20,7 @@ The open items are in [Roadmap](#roadmap) and [Limits](#limits).
 | 1 | Envelope features halve the leave-one-load-out errors on CWRU (macro-F1 0.949 → 0.974). The RMS alarm false-alarms on 100% of healthy windows at an unseen load. |
 | 2 | Early warning on 4 natural failures: the RMS alarm with a held-out threshold gives 74–159 h of warning. Learned detectors don't beat it. |
 | 2b | A drift-following threshold cuts false alarms 91% (117 → 10) and still catches all 4 failures (49–120 h of warning). |
-| 3 | On unseen Paderborn bearings, scores fall from 0.997 (random split) to 0.42–0.62. Defect-line features generalise best. Motor current's score doesn't come from bearing physics. |
+| 3 | On unseen Paderborn bearings, scores fall from 0.997 (random split) to at most 0.62. Defect-line features generalise best. Motor current's score doesn't come from bearing physics. |
 | 4 | The CNN matches the features on average (0.969–0.986). In int8 C it is bit-exact with the reference: 23.9 KB flash, 8 KB RAM. |
 | 5 | The dashboard explains each alarm by the features that moved. It named the right defect for 1 of the 4 failures. |
 
@@ -273,7 +273,7 @@ Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA progn
 
 ## Limits
 
-- On CWRU, leave-one-load-out still uses the same seeded bearings at every load, so it tests robustness to load, not to a new bearing. Stage 3 tests unseen bearings, and there the scores fall to 0.42–0.62. Training on one dataset and testing on another is not done yet (stage 3b).
+- On CWRU, leave-one-load-out still uses the same seeded bearings at every load, so it tests robustness to load, not to a new bearing. Stage 3 tests unseen bearings, and there the best score is 0.62. Training on one dataset and testing on another is not done yet (stage 3b).
 - The envelope band is fixed: 2–5 kHz on CWRU, 2–8 kHz on IMS and Paderborn. Choosing it per machine (the kurtogram) is on the list.
 - Seeded EDM faults are not natural wear. Stage 2 uses a bearing that wore out on its own.
 - Four failures is a small sample. The stage 2 tables describe these four runs, not a failure rate.
