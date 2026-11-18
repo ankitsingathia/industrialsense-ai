@@ -1,0 +1,78 @@
+{
+  "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+  "threads": 1,
+  "summary": {
+    "fp32": {
+      "macro_f1": 0.9865,
+      "file_kb": 87.8,
+      "latency_ms": 0.0585
+    },
+    "int8": {
+      "macro_f1": 0.9859,
+      "file_kb": 36.0,
+      "latency_ms": 0.0315
+    }
+  },
+  "folds": [
+    {
+      "test_load_hp": 0,
+      "fp32": {
+        "macro_f1": 0.9477055056113756,
+        "agrees_with_pytorch": 1.0,
+        "file_kb": 87.8,
+        "latency_ms": 0.055
+      },
+      "int8": {
+        "macro_f1": 0.9445282803454622,
+        "agrees_with_pytorch": 0.9910394265232975,
+        "file_kb": 36.0,
+        "latency_ms": 0.031
+      }
+    },
+    {
+      "test_load_hp": 1,
+      "fp32": {
+        "macro_f1": 0.9982904734073641,
+        "agrees_with_pytorch": 1.0,
+        "file_kb": 87.8,
+        "latency_ms": 0.062
+      },
+      "int8": {
+        "macro_f1": 0.9991452835357502,
+        "agrees_with_pytorch": 0.9991489361702127,
+        "file_kb": 36.0,
+        "latency_ms": 0.031
+      }
+    },
+    {
+      "test_load_hp": 2,
+      "fp32": {
+        "macro_f1": 1.0,
+        "agrees_with_pytorch": 1.0,
+        "file_kb": 87.8,
+        "latency_ms": 0.055
+      },
+      "int8": {
+        "macro_f1": 1.0,
+        "agrees_with_pytorch": 1.0,
+        "file_kb": 36.0,
+        "latency_ms": 0.032
+      }
+    },
+    {
+      "test_load_hp": 3,
+      "fp32": {
+        "macro_f1": 1.0,
+        "agrees_with_pytorch": 1.0,
+        "file_kb": 87.8,
+        "latency_ms": 0.062
+      },
+      "int8": {
+        "macro_f1": 1.0,
+        "agrees_with_pytorch": 1.0,
+        "file_kb": 36.0,
+        "latency_ms": 0.032
+      }
+    }
+  ]
+}

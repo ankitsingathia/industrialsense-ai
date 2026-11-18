@@ -1,0 +1,60 @@
+{
+  "folds": [
+    {
+      "test_load_hp": 0,
+      "bit_exact_vs_numpy": true,
+      "macro_f1_c_int8": 0.9468749443402789,
+      "macro_f1_fp32": 0.9477055056113756,
+      "agrees_with_fp32": 0.9937275985663082
+    },
+    {
+      "test_load_hp": 1,
+      "bit_exact_vs_numpy": true,
+      "macro_f1_c_int8": 0.9991452835357502,
+      "macro_f1_fp32": 0.9982904734073641,
+      "agrees_with_fp32": 0.9991489361702127
+    },
+    {
+      "test_load_hp": 2,
+      "bit_exact_vs_numpy": true,
+      "macro_f1_c_int8": 1.0,
+      "macro_f1_fp32": 1.0,
+      "agrees_with_fp32": 1.0
+    },
+    {
+      "test_load_hp": 3,
+      "bit_exact_vs_numpy": true,
+      "macro_f1_c_int8": 1.0,
+      "macro_f1_fp32": 1.0,
+      "agrees_with_fp32": 1.0
+    }
+  ],
+  "all_bit_exact": true,
+  "macro_f1_c_int8_mean": 0.9865050569690073,
+  "macro_f1_fp32_mean": 0.9864989947546849,
+  "macs_per_window": 1137280,
+  "cortex_m4": {
+    "compiler": "arm-none-eabi-gcc (xPack GNU Arm Embedded GCC x86_64) 15.2.1 20251203",
+    "flags": "-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os -std=c99 -ffp-contract=off -ffunction-sections -fdata-sections -fstack-usage -Wall -Werror",
+    "kernel_flash_bytes": 23908,
+    "kernel_static_ram_bytes": 7968,
+    "kernel_stack_bytes": {
+      "main": 48,
+      "wdcnn_classify": 320
+    },
+    "whole_image_sections": {
+      ".init": 12,
+      ".text": 1720,
+      ".fini": 12,
+      ".rodata": 23120,
+      ".eh_frame": 4,
+      ".init_array": 4,
+      ".fini_array": 4,
+      ".data": 4,
+      ".persistent": 0,
+      ".bss": 16344,
+      ".noinit": 0,
+      ".comment": 57
+    }
+  }
+}

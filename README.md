@@ -6,7 +6,7 @@ Bearing and motor fault early warning from vibration and motor current, aimed at
 
 This started as a proposal I made at work: use the data a plant already records to catch equipment faults before they trip a line. Plant data stays inside the plant, so this repo builds and tests the method on public bearing datasets. Every number below comes from a script in this repo.
 
-**Status (18 Nov 2026):** stages 1 and 2 of 5 are done: diagnosis on CWRU, and early warning on the NASA IMS run-to-failure tests. Motor-current diagnosis, int8 edge inference and the dashboard are next; see [Roadmap](#roadmap).
+**Status (18 Nov 2026):** stages 1, 2 and 4 of 5 are done: diagnosis on CWRU, early warning on the NASA IMS run-to-failure tests, and an int8 CNN in C sized for a Cortex-M4. Motor-current diagnosis (stage 3) and the dashboard (stage 5) are next; see [Roadmap](#roadmap).
 
 ---
 
@@ -126,6 +126,51 @@ Reproduce: `python scripts/ims_features.py`, then `python scripts/run_early_warn
 - **Test 1 stops for six days after its first day.** The 148-hour gap follows the first 24 hours. A reference period that ends before the stop has never seen the machine restart. False alarms are counted per hour watched, not calendar time.
 - **The bearing geometry is not in the readme.** The defect frequencies come from the dimensions in its reference paper (Qiu et al., 2006). A test checks them against the published values: BPFO 236.4 Hz, BPFI 296.9 Hz.
 
+## Stage 4 results: a CNN on raw vibration, then the same network in int8 C
+
+### 4a. 1D CNN vs the stage 1 features
+
+The CNN is a small WDCNN-style network. It takes the raw 2,048-sample window, starts with one wide strided kernel (64 taps, stride 8) acting as a learned filter bank, then has three small convolutions. That's 22,170 parameters in total. It uses the same windows and leave-one-load-out folds as stage 1, and was trained with 3 seeds:
+
+| | Gradient boosting, time + envelope features | 1D CNN, raw window |
+|---|---|---|
+| Leave-one-load-out macro-F1 | 0.974 | 0.969–0.986 (3 seeds) |
+| Hardest load (0 hp) | **0.961** | 0.930–0.948 |
+| Input | 23 hand-built features | 2,048 raw samples |
+
+The CNN matches the hand-built features on average. It is consistently worse at 0 hp, the load furthest from the other three. The CNN's reason to exist is the edge: one fixed chain of integer convolutions, with no FFT, filter design or feature code to port to the microcontroller.
+
+### 4b. ONNX Runtime, fp32 vs int8
+
+Static int8 quantisation in ONNX Runtime, per-channel weights, calibrated on 256 windows from the training loads only:
+
+| Per fold, mean of 4 | fp32 | int8 |
+|---|---|---|
+| Macro-F1 | 0.9865 | 0.9859 |
+| Model file | 87.8 KB | **36.0 KB** (−59%) |
+| Latency, one window, 1 thread, i5-12450H | 0.059 ms | **0.032 ms** (1.9× faster) |
+
+### 4c. The int8 network in C, sized for a Cortex-M4
+
+A microcontroller has no ONNX Runtime, so the network is quantised by hand:
+- batch norm folded into the convolutions
+- int8 weights per channel, int8 activations per layer
+- int32 accumulators, requantised with a float multiplier
+
+The quantisation is written twice, once in NumPy (`src/isense/int8.py`) and once in C (`firmware/wdcnn.c`). The C kernel uses no heap.
+
+| | Result |
+|---|---|
+| C kernel vs NumPy reference | **bit-identical logits** on every held-out window, all 4 folds |
+| Macro-F1, C int8 vs fp32 | 0.9865 vs 0.9865 |
+| Flash, kernel + weights (Cortex-M4, `-Os`) | **23.9 KB** |
+| Static RAM (two ping-pong activation buffers) | 8.0 KB, plus 320 B of stack |
+| Work per window | 1.14 M multiply-accumulates |
+
+The flash and RAM numbers come from `arm-none-eabi-gcc` 15.2 and its stack-usage report. They fit an STM32F4-class part (512 KB+ flash, 128 KB+ RAM) with room to spare. **This has not been run on a board, and the latency on the M4 is not measured.** The test `tests/test_firmware.py` builds the C kernel and checks the bit-exact match on every CI run.
+
+Reproduce: `python scripts/run_cnn.py`, then `run_edge.py`, then `run_firmware.py` (needs `gcc` and `arm-none-eabi-gcc` on PATH).
+
 ## How the envelope features work
 
 A local defect produces a short impact each time a ball passes it. The impact rings a structural resonance in the kHz range, so the defect rate appears as amplitude modulation of that resonance, not as a clear line in the raw spectrum. The pipeline:
@@ -148,6 +193,8 @@ python -m pytest -q
 python scripts/run_baselines.py
 ```
 
+Stage 4 needs `pip install torch onnx onnxruntime`.
+
 Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA prognostics data repository](https://phm-datasets.s3.amazonaws.com/NASA/4.+Bearings.zip), unpacked under `data/raw/ims/`, plus `pip install torch` for the autoencoder.
 
 ## Limits
@@ -166,7 +213,7 @@ Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA progn
 | 2 | Early warning on NASA IMS run-to-failure: autoencoder and Isolation Forest trained on healthy data, lead time and false alarms vs the RMS alarm | done |
 | 2b | Threshold that follows slow drift (the source of nearly all RMS false alarms); RMS and Isolation Forest voting together | done |
 | 3 | Paderborn: vibration vs motor current vs both; train on one dataset, test on another | planned |
-| 4 | 1D CNN, int8 quantisation, ONNX Runtime latency, Cortex-M4 build in the Renode emulator (no physical board) | planned |
+| 4 | 1D CNN, int8 quantisation, ONNX Runtime latency, int8 C kernel sized for a Cortex-M4 (no physical board) | done |
 | 5 | React + FastAPI dashboard: machine health, alarm timeline, which band triggered each alarm | planned |
 
 Design choices and rejected alternatives are in [DECISIONS.md](DECISIONS.md).

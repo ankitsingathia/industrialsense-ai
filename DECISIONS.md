@@ -53,6 +53,25 @@ A threshold that adapts to every snapshot would follow a fault upward and switch
 
 The band was chosen before looking at any failure data. It sits above the shaft harmonics and below the anti-alias roll-off near 10 kHz. Picking it from the failure period (where the defect resonance is) would leak the answer into the features.
 
+## Stage 4: a wide first kernel
+
+A 64-tap first kernel with stride 8 covers 5 ms of signal, long enough to span the ringing of one impact. It also cuts the sequence from 2,048 to 249 positions in the first layer, so most of the compute is spent once. After that, three 3-tap layers are cheap. The result is 22k parameters and 1.14 M multiply-accumulates, small enough for a Cortex-M4 without pruning.
+
+## Stage 4: quantising by hand instead of TFLite Micro
+
+TFLite Micro would mean converting PyTorch → ONNX → TensorFlow → TFLite, and every hop is a place for operator mismatches. A four-layer network takes about 120 lines of C to run directly. Every operation is also visible, which matters when the question is "why did accuracy change by this much". The scheme is the same one TFLite uses (symmetric per-channel int8 weights, per-tensor activations, int32 accumulators), so moving to CMSIS-NN kernels later changes speed, not results.
+
+## Stage 4: a float requantisation multiplier, with FMA off
+
+Integer-only requantisation (a fixed-point multiplier plus a shift) is needed on cores without an FPU. The M4F has a single-precision FPU, so one float multiply per output is simpler and exact enough. Bit-exact agreement between NumPy and C needs three things:
+- the same rounding everywhere: floor(v + 0.5)
+- float32 arithmetic on both sides
+- `-ffp-contract=off`, so GCC doesn't fuse multiply-add into an FMA, which rounds once instead of twice
+
+## Stage 4: calibration windows from the training loads only
+
+Activation ranges for int8 come from 256 windows drawn from the three training loads. Calibrating on the held-out load would leak its signal levels into the model. 0 hp, the quietest load, is exactly where that leak would matter most.
+
 ## RMS alarm as the baseline
 
 The baseline is what a plant actually runs: an overall-vibration threshold. Beating it is the claim that matters. Beating a deliberately weak model would mean nothing.

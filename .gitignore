@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .pytest_cache/
 *.onnx
+models/
+firmware/wdcnn_weights.h
