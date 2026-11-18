@@ -1,5 +1,7 @@
 # IndustrialSense AI
 
+[![tests](https://github.com/ankitsingathia/industrialsense-ai/actions/workflows/tests.yml/badge.svg)](https://github.com/ankitsingathia/industrialsense-ai/actions/workflows/tests.yml)
+
 Bearing and motor fault early warning from vibration and motor current, aimed at a microcontroller.
 
 This started as a proposal I made at work: use the data a plant already records to catch equipment faults before they trip a line. Plant data stays inside the plant, so this repo builds and tests the method on public bearing datasets. Every number below comes from a script in this repo.
