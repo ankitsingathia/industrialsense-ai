@@ -99,6 +99,23 @@ Each detector sees only one bearing's first 48 monitored hours. It is fitted on 
   - With a 96 h reference, Isolation Forest raises 263 false alarms against RMS's 129.
   - Persistence alone cuts RMS false alarms from 255 to 117 to 74 (1, 3 and 6 snapshots), at a cost of 4–42 h of lead time.
 
+### Stage 2b: a threshold that follows slow drift
+
+Nearly all of RMS's false alarms come from slow drift, so the next step was to let the threshold follow it. The healthy mean and spread keep learning after the reference period, as an exponentially weighted average with a 72-hour time constant. The time constant was fixed before the run. The threshold learns only from snapshots that are under it, so an alarm already raised does not teach itself to go quiet.
+
+| | Fixed RMS threshold | Drift-following RMS | RMS and Isolation Forest must agree |
+|---|---|---|---|
+| Failures caught (alarm stays on) | 4 of 4 | **4 of 4** | 3 of 4 |
+| Lead time | 75–159 h | 49–120 h | 59–77 h |
+| False alarms on surviving bearings | 117 | **10** | 7 |
+
+The drift-following threshold cuts false alarms by 91% and still catches all four failures, at a cost of 22–39 h of warning on three of them. Test 2 is unchanged at 75 h. The time constant sets the trade-off:
+
+- 24 h gives 6 false alarms, but only 12 h of warning on test 1's inner race.
+- 168 h gives 15 false alarms and 59–148 h of warning.
+
+A fault that grows more slowly than the time constant would be absorbed. That is the limit of this method, and it is why the time constant has to come from how fast real faults grow on the machine.
+
 **How the false alarms are counted.** Every alarm on a surviving bearing counts as false, but only until the failing bearing's alarm latches, by the same detector. After that point it isn't false: all four bearings share the shaft. In test 2 the BPFO envelope line grew 8.7× on the failed bearing, and 1.9–5.2× on its three healthy neighbours.
 
 Reproduce: `python scripts/ims_features.py`, then `python scripts/run_early_warning.py`.
@@ -147,7 +164,7 @@ Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA progn
 |---|---|---|
 | 1 | CWRU diagnosis, baselines, data audit | done |
 | 2 | Early warning on NASA IMS run-to-failure: autoencoder and Isolation Forest trained on healthy data, lead time and false alarms vs the RMS alarm | done |
-| 2b | Threshold that follows slow drift (the source of nearly all RMS false alarms); RMS and Isolation Forest voting together | planned |
+| 2b | Threshold that follows slow drift (the source of nearly all RMS false alarms); RMS and Isolation Forest voting together | done |
 | 3 | Paderborn: vibration vs motor current vs both; train on one dataset, test on another | planned |
 | 4 | 1D CNN, int8 quantisation, ONNX Runtime latency, Cortex-M4 build in the Renode emulator (no physical board) | planned |
 | 5 | React + FastAPI dashboard: machine health, alarm timeline, which band triggered each alarm | planned |

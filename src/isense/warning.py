@@ -134,6 +134,26 @@ def alarms(scores: np.ndarray, cal: np.ndarray, start: int, persist: int) -> tup
     return a, thr
 
 
+def adaptive_alarms(scores: np.ndarray, cal: np.ndarray, start: int, persist: int, tau: float) -> np.ndarray:
+    """Like alarms(), but the healthy mean and spread keep learning after the
+    reference period, as an exponentially weighted average with time constant
+    `tau` snapshots. They learn only from snapshots that are under the current
+    threshold, so a rising fault does not teach the alarm to ignore it; it can
+    still be absorbed if it rises slower than tau.
+    """
+    mu, var = float(scores[cal].mean()), float(scores[cal].var())
+    a = 1.0 / tau
+    over = np.zeros(len(scores), dtype=bool)
+    for i in range(start, len(scores)):
+        s = scores[i]
+        over[i] = s > mu + 3 * np.sqrt(var)
+        if not over[i]:
+            d = s - mu
+            mu += a * d
+            var += a * (d * d - var)
+    return persistent(over, persist)
+
+
 def lead_time_h(hours: np.ndarray, alarm: np.ndarray) -> float:
     i = latch(alarm)
     return float(hours[-1] - hours[i]) if i is not None else 0.0

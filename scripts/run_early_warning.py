@@ -33,6 +33,7 @@ from isense import ims, warning  # noqa: E402
 
 REF_HOURS = 48.0
 PERSIST = 3  # snapshots, 30 minutes at the usual 10-minute interval
+ADAPT_HOURS = 72.0  # time constant of the drift-following threshold (stage 2b), fixed before running
 
 
 def detectors():
@@ -51,17 +52,28 @@ def run_test(test: ims.Test, ref_hours: float, persist: int, keep_scores=False):
     n_ref = int(round(ref_hours / step_h))  # monitored time, not calendar time
     fit, cal = np.arange(n_ref * 2 // 3), np.arange(n_ref * 2 // 3, n_ref)
     rows, scores = [], {}
+    raw = {}  # detector -> bearing -> score
     for det in detectors():
-        al = {}
-        for b in range(X.shape[1]):
-            s = det.fit(X[fit, b, :]).score(X[:, b, :])
-            al[b + 1], thr = warning.alarms(s, cal, n_ref, persist)
+        raw[det.name] = {b + 1: det.fit(X[fit, b, :]).score(X[:, b, :]) for b in range(X.shape[1])}
+
+    alarm_sets = {}
+    for name, by_b in raw.items():
+        alarm_sets[name] = {}
+        for b, s in by_b.items():
+            alarm_sets[name][b], thr = warning.alarms(s, cal, n_ref, persist)
             if keep_scores:
-                scores[(det.name, b + 1)] = (s, thr)
+                scores[(name, b)] = (s, thr)
+    # stage 2b variants, built from the same scores
+    alarm_sets["rms_adaptive"] = {
+        b: warning.adaptive_alarms(s, cal, n_ref, persist, tau=ADAPT_HOURS / step_h) for b, s in raw["rms"].items()
+    }
+    alarm_sets["vote_rms_iforest"] = {b: alarm_sets["rms"][b] & alarm_sets["iforest"][b] for b in raw["rms"]}
+
+    for name, al in alarm_sets.items():
         latches = [warning.latch(al[b]) for b in test.failed]
         stop = min((i for i in latches if i is not None), default=len(hours))
         for bearing, a in al.items():
-            r = {"test": test.name, "bearing": bearing, "detector": det.name, "failed": bearing in test.failed}
+            r = {"test": test.name, "bearing": bearing, "detector": name, "failed": bearing in test.failed}
             if r["failed"]:
                 i = warning.latch(a)
                 r.update(mode=test.failed[bearing], lead_time_h=warning.lead_time_h(hours, a),
@@ -104,6 +116,12 @@ def main():
         f"ref{rh:g}h_persist{p}": summary(run(rh, p))
         for rh in (24, 48, 96) for p in (1, 3, 6) if (rh, p) != (REF_HOURS, PERSIST)
     }
+    global ADAPT_HOURS
+    fixed, out["adapt_sweep"] = ADAPT_HOURS, {}
+    for tau in (24.0, 72.0, 168.0):
+        ADAPT_HOURS = tau
+        out["adapt_sweep"][f"tau{tau:g}h"] = summary(run())["rms_adaptive"]
+    ADAPT_HOURS = fixed
     (ROOT / "results").mkdir(exist_ok=True)
     (ROOT / "results/early_warning.json").write_text(json.dumps(out, indent=2))
     for name, s in out["summary"].items():

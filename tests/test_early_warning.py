@@ -64,6 +64,20 @@ def test_false_alarms_count_watched_time_not_calendar_time():
     assert r["onsets"] == 2 and r["days"] == pytest.approx(2.0)
 
 
+def test_adaptive_threshold_follows_slow_drift_but_catches_a_step():
+    rng = np.random.default_rng(1)
+    n = 3000
+    s = 1 + 0.02 * rng.standard_normal(n) + np.linspace(0, 0.3, n)  # 30% rise over 3000 snapshots
+    fixed, _ = warning.alarms(s, CAL, N_REF, 3)
+    adaptive = warning.adaptive_alarms(s, CAL, N_REF, 3, tau=432)
+    assert fixed[N_REF:].mean() > 0.5
+    assert adaptive[N_REF:].mean() < 0.01
+
+    s[2500:] += 0.5  # sudden fault
+    adaptive = warning.adaptive_alarms(s, CAL, N_REF, 3, tau=432)
+    assert adaptive[2502:].all()
+
+
 def test_isolation_forest_is_quiet_on_healthy_and_catches_drift():
     hours, X = _run()
     quiet = warning.false_alarms(_alarm(warning.IForestDetector(), X), N_REF, len(X), 1 / 6)

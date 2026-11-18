@@ -45,6 +45,10 @@ Counting from the first alarm would reward a detector that fires early and at ra
 
 All four bearings sit on one shaft, so a failing bearing shows up on its neighbours' sensors. In test 2 their BPFO lines grew 1.9–5.2×. Counting those late alarms as false would punish a detector for being right. False alarms on a surviving bearing are counted until the failing bearing's alarm latches, by the same detector. Because of this cut-off, the number of bearing-days watched differs a little between detectors, and the README shows it next to each count.
 
+## Stage 2b: learn only from snapshots under the threshold
+
+A threshold that adapts to every snapshot would follow a fault upward and switch its own alarm off. Updating only on snapshots below the threshold means an alarm, once raised, freezes the baseline. The 72 h time constant was chosen to be much longer than the alarm window (30 minutes) and much shorter than the six weeks of test 3. It was fixed before the first run. 24 h and 168 h are reported next to it, so the choice can be checked.
+
 ## Stage 2: fixed 2–8 kHz envelope band
 
 The band was chosen before looking at any failure data. It sits above the shaft harmonics and below the anti-alias roll-off near 10 kHz. Picking it from the failure period (where the defect resonance is) would leak the answer into the features.
