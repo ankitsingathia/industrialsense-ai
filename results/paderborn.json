@@ -1,0 +1,541 @@
+{
+  "windows": 18000,
+  "classes": [
+    "healthy",
+    "outer",
+    "inner"
+  ],
+  "folds": [
+    [
+      "K001",
+      "KA04",
+      "KI04"
+    ],
+    [
+      "K002",
+      "KA15",
+      "KI14"
+    ],
+    [
+      "K003",
+      "KA16",
+      "KI16"
+    ],
+    [
+      "K004",
+      "KA22",
+      "KI18"
+    ],
+    [
+      "K005",
+      "KA30",
+      "KI21"
+    ]
+  ],
+  "results": {
+    "vibration_time/gbm": {
+      "n_features": 9,
+      "naive_window_f1": 0.9271,
+      "bearing_out_window_f1": 0.4186,
+      "bearing_out_window_f1_by_fold": [
+        0.4752,
+        0.0665,
+        0.8384,
+        0.4893,
+        0.2236
+      ],
+      "bearing_out_recording_f1": 0.4065,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.3915,
+        "N09_M07_F10": 0.4125,
+        "N15_M01_F10": 0.4183,
+        "N15_M07_F04": 0.3483
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          2753,
+          1954,
+          1293
+        ],
+        [
+          2099,
+          2122,
+          1779
+        ],
+        [
+          1443,
+          1665,
+          2892
+        ]
+      ]
+    },
+    "vibration_time/logreg": {
+      "n_features": 9,
+      "naive_window_f1": 0.5517,
+      "bearing_out_window_f1": 0.3023,
+      "bearing_out_window_f1_by_fold": [
+        0.4343,
+        0.2112,
+        0.6438,
+        0.1092,
+        0.113
+      ],
+      "bearing_out_recording_f1": 0.2743,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.2502,
+        "N09_M07_F10": 0.2872,
+        "N15_M01_F10": 0.284,
+        "N15_M07_F04": 0.2948
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          2671,
+          761,
+          2568
+        ],
+        [
+          766,
+          2061,
+          3173
+        ],
+        [
+          1389,
+          3228,
+          1383
+        ]
+      ]
+    },
+    "vibration_defect_lines/gbm": {
+      "n_features": 12,
+      "naive_window_f1": 0.7147,
+      "bearing_out_window_f1": 0.5842,
+      "bearing_out_window_f1_by_fold": [
+        0.885,
+        0.3994,
+        0.7473,
+        0.5081,
+        0.381
+      ],
+      "bearing_out_recording_f1": 0.624,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.5969,
+        "N09_M07_F10": 0.5061,
+        "N15_M01_F10": 0.584,
+        "N15_M07_F04": 0.6382
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          4223,
+          849,
+          928
+        ],
+        [
+          1535,
+          2963,
+          1502
+        ],
+        [
+          1059,
+          1184,
+          3757
+        ]
+      ]
+    },
+    "vibration_defect_lines/logreg": {
+      "n_features": 12,
+      "naive_window_f1": 0.6888,
+      "bearing_out_window_f1": 0.6145,
+      "bearing_out_window_f1_by_fold": [
+        0.9231,
+        0.4118,
+        0.7452,
+        0.5755,
+        0.4168
+      ],
+      "bearing_out_recording_f1": 0.6627,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.6379,
+        "N09_M07_F10": 0.5139,
+        "N15_M01_F10": 0.6168,
+        "N15_M07_F04": 0.6759
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          4343,
+          761,
+          896
+        ],
+        [
+          1378,
+          3319,
+          1303
+        ],
+        [
+          1086,
+          1144,
+          3770
+        ]
+      ]
+    },
+    "vibration/gbm": {
+      "n_features": 23,
+      "naive_window_f1": 0.9609,
+      "bearing_out_window_f1": 0.4675,
+      "bearing_out_window_f1_by_fold": [
+        0.5746,
+        0.0996,
+        0.8137,
+        0.5662,
+        0.2834
+      ],
+      "bearing_out_recording_f1": 0.4613,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.495,
+        "N09_M07_F10": 0.4162,
+        "N15_M01_F10": 0.4823,
+        "N15_M07_F04": 0.3894
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          3102,
+          1589,
+          1309
+        ],
+        [
+          2079,
+          2051,
+          1870
+        ],
+        [
+          943,
+          1298,
+          3759
+        ]
+      ]
+    },
+    "vibration/logreg": {
+      "n_features": 23,
+      "naive_window_f1": 0.7471,
+      "bearing_out_window_f1": 0.4893,
+      "bearing_out_window_f1_by_fold": [
+        0.7637,
+        0.2755,
+        0.6886,
+        0.4452,
+        0.2732
+      ],
+      "bearing_out_recording_f1": 0.4827,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.5135,
+        "N09_M07_F10": 0.3421,
+        "N15_M01_F10": 0.5269,
+        "N15_M07_F04": 0.5449
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          3492,
+          1356,
+          1152
+        ],
+        [
+          1704,
+          2274,
+          2022
+        ],
+        [
+          1042,
+          1491,
+          3467
+        ]
+      ]
+    },
+    "current_sidebands/gbm": {
+      "n_features": 16,
+      "naive_window_f1": 0.4614,
+      "bearing_out_window_f1": 0.381,
+      "bearing_out_window_f1_by_fold": [
+        0.4527,
+        0.2428,
+        0.4142,
+        0.3898,
+        0.4054
+      ],
+      "bearing_out_recording_f1": 0.4099,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.3907,
+        "N09_M07_F10": 0.3714,
+        "N15_M01_F10": 0.3576,
+        "N15_M07_F04": 0.3966
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          3158,
+          1353,
+          1489
+        ],
+        [
+          1873,
+          2150,
+          1977
+        ],
+        [
+          2224,
+          2057,
+          1719
+        ]
+      ]
+    },
+    "current_sidebands/logreg": {
+      "n_features": 16,
+      "naive_window_f1": 0.3796,
+      "bearing_out_window_f1": 0.3348,
+      "bearing_out_window_f1_by_fold": [
+        0.3736,
+        0.297,
+        0.3366,
+        0.3171,
+        0.3496
+      ],
+      "bearing_out_recording_f1": 0.3259,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.3303,
+        "N09_M07_F10": 0.3447,
+        "N15_M01_F10": 0.3213,
+        "N15_M07_F04": 0.3178
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          2108,
+          2164,
+          1728
+        ],
+        [
+          1990,
+          2403,
+          1607
+        ],
+        [
+          2102,
+          2277,
+          1621
+        ]
+      ]
+    },
+    "current/gbm": {
+      "n_features": 32,
+      "naive_window_f1": 0.9489,
+      "bearing_out_window_f1": 0.5923,
+      "bearing_out_window_f1_by_fold": [
+        0.5335,
+        0.2248,
+        0.9058,
+        0.9316,
+        0.3661
+      ],
+      "bearing_out_recording_f1": 0.6167,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.5916,
+        "N09_M07_F10": 0.6079,
+        "N15_M01_F10": 0.5472,
+        "N15_M07_F04": 0.6192
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          4656,
+          1193,
+          151
+        ],
+        [
+          407,
+          3701,
+          1892
+        ],
+        [
+          81,
+          2663,
+          3256
+        ]
+      ]
+    },
+    "current/logreg": {
+      "n_features": 32,
+      "naive_window_f1": 0.6713,
+      "bearing_out_window_f1": 0.3827,
+      "bearing_out_window_f1_by_fold": [
+        0.443,
+        0.3059,
+        0.4754,
+        0.5795,
+        0.1096
+      ],
+      "bearing_out_recording_f1": 0.3964,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.3835,
+        "N09_M07_F10": 0.431,
+        "N15_M01_F10": 0.3957,
+        "N15_M07_F04": 0.3127
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          2045,
+          1478,
+          2477
+        ],
+        [
+          1038,
+          2779,
+          2183
+        ],
+        [
+          1706,
+          1827,
+          2467
+        ]
+      ]
+    },
+    "vibration+current/gbm": {
+      "n_features": 55,
+      "naive_window_f1": 0.9974,
+      "bearing_out_window_f1": 0.5629,
+      "bearing_out_window_f1_by_fold": [
+        0.549,
+        0.3093,
+        0.7417,
+        0.803,
+        0.4115
+      ],
+      "bearing_out_recording_f1": 0.5709,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.5795,
+        "N09_M07_F10": 0.5298,
+        "N15_M01_F10": 0.5945,
+        "N15_M07_F04": 0.4595
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          4199,
+          1098,
+          703
+        ],
+        [
+          308,
+          2936,
+          2756
+        ],
+        [
+          21,
+          2029,
+          3950
+        ]
+      ]
+    },
+    "vibration+current/logreg": {
+      "n_features": 55,
+      "naive_window_f1": 0.9282,
+      "bearing_out_window_f1": 0.6047,
+      "bearing_out_window_f1_by_fold": [
+        0.8302,
+        0.3467,
+        0.6175,
+        0.7509,
+        0.4781
+      ],
+      "bearing_out_recording_f1": 0.6147,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.6045,
+        "N09_M07_F10": 0.5648,
+        "N15_M01_F10": 0.6119,
+        "N15_M07_F04": 0.5972
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          4273,
+          1438,
+          289
+        ],
+        [
+          723,
+          2614,
+          2663
+        ],
+        [
+          79,
+          1304,
+          4617
+        ]
+      ]
+    },
+    "defect_lines+sidebands/gbm": {
+      "n_features": 28,
+      "naive_window_f1": 0.7398,
+      "bearing_out_window_f1": 0.58,
+      "bearing_out_window_f1_by_fold": [
+        0.8686,
+        0.3695,
+        0.7195,
+        0.5339,
+        0.4086
+      ],
+      "bearing_out_recording_f1": 0.6245,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.5992,
+        "N09_M07_F10": 0.515,
+        "N15_M01_F10": 0.5642,
+        "N15_M07_F04": 0.6178
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          3979,
+          1017,
+          1004
+        ],
+        [
+          1282,
+          3081,
+          1637
+        ],
+        [
+          989,
+          1341,
+          3670
+        ]
+      ]
+    },
+    "defect_lines+sidebands/logreg": {
+      "n_features": 28,
+      "naive_window_f1": 0.6941,
+      "bearing_out_window_f1": 0.6014,
+      "bearing_out_window_f1_by_fold": [
+        0.9139,
+        0.4011,
+        0.7341,
+        0.536,
+        0.422
+      ],
+      "bearing_out_recording_f1": 0.6358,
+      "bearing_out_f1_by_condition": {
+        "N15_M07_F10": 0.6225,
+        "N09_M07_F10": 0.5176,
+        "N15_M01_F10": 0.6064,
+        "N15_M07_F04": 0.6478
+      },
+      "confusion_rows_true_cols_pred": [
+        [
+          4313,
+          775,
+          912
+        ],
+        [
+          1424,
+          3179,
+          1397
+        ],
+        [
+          1140,
+          1147,
+          3713
+        ]
+      ]
+    }
+  }
+}

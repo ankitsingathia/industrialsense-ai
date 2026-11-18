@@ -6,7 +6,7 @@ Bearing and motor fault early warning from vibration and motor current, aimed at
 
 This started as a proposal I made at work: use the data a plant already records to catch equipment faults before they trip a line. Plant data stays inside the plant, so this repo builds and tests the method on public bearing datasets. Every number below comes from a script in this repo.
 
-**Status (18 Nov 2026):** stages 1, 2 and 4 of 5 are done: diagnosis on CWRU, early warning on the NASA IMS run-to-failure tests, and an int8 CNN in C sized for a Cortex-M4. Motor-current diagnosis (stage 3) and the dashboard (stage 5) are next; see [Roadmap](#roadmap).
+**Status (18 Nov 2026):** stages 1 to 4 of 5 are done: diagnosis on CWRU, early warning on the NASA IMS run-to-failure tests, vibration vs motor current on Paderborn, and an int8 CNN in C sized for a Cortex-M4. The dashboard (stage 5) is next; see [Roadmap](#roadmap).
 
 ---
 
@@ -126,6 +126,40 @@ Reproduce: `python scripts/ims_features.py`, then `python scripts/run_early_warn
 - **Test 1 stops for six days after its first day.** The 148-hour gap follows the first 24 hours. A reference period that ends before the stop has never seen the machine restart. False alarms are counted per hour watched, not calendar time.
 - **The bearing geometry is not in the readme.** The defect frequencies come from the dimensions in its reference paper (Qiu et al., 2006). A test checks them against the published values: BPFO 236.4 Hz, BPFI 296.9 Hz.
 
+## Stage 3 results: vibration vs motor current, on bearings the model has never seen
+
+Most motors in a plant have no vibration sensor, but their current is already measured at the drive. So the question is whether bearing faults can be caught from current alone.
+
+The Paderborn data records vibration and two motor phase currents together, at 64 kHz. The subset here is 15 bearings: 5 healthy, 5 with outer-ring damage and 5 with inner-ring damage. All the damage came from accelerated lifetime tests, not machining. That gives 1,200 four-second recordings across 4 operating conditions, cut into 18,000 windows of 0.26 s.
+
+Each fold tests on one healthy, one outer and one inner bearing and trains on the other twelve. No physical bearing appears on both sides. Macro-F1 across the 3 classes, where chance is 0.33:
+
+| Features | Model | Naive random split | Unseen bearings (window) | Unseen bearings (recording, 15-window vote) |
+|---|---|---|---|---|
+| Vibration, time-domain (9) | Gradient boosting | 0.927 | 0.419 | 0.406 |
+| Vibration, all (23) | Gradient boosting | 0.961 | 0.468 | 0.461 |
+| **Vibration, defect lines only (12)** | **Logistic regression** | 0.689 | **0.615** | **0.663** |
+| Vibration, defect lines only (12) | Gradient boosting | 0.715 | 0.584 | 0.624 |
+| Current, all (32) | Gradient boosting | 0.949 | 0.592 | 0.617 |
+| Current, defect sidebands only (16) | Gradient boosting | 0.461 | 0.381 | 0.410 |
+| Vibration + current (55) | Gradient boosting | **0.997** | 0.563 | 0.571 |
+| Vibration + current (55) | Logistic regression | 0.928 | 0.605 | 0.615 |
+
+All 14 combinations tried are in `results/paderborn.json`, including the ones not shown here.
+
+**What this shows:**
+
+- **The random split is almost meaningless here.** The richest model scores 0.997 on random windows and 0.563 on bearings it has never seen. With 5 bearings per class, a flexible model learns each bearing's individual signature, and a random split rewards that. This is the same leak as stage 1, much larger.
+- **Physics features generalise better than general statistics.** The 12 envelope defect-line features beat all 23 vibration features on unseen bearings (0.615 vs 0.468), with a simpler model. The time-domain statistics mostly measure how loud a particular bearing is.
+- **Current alone reached 0.59, but not for the reason theory predicts.** Motor-current analysis says a bearing defect shows up as sidebands at supply frequency ± defect frequency. On their own, those sidebands score at chance (0.33–0.38). Current's score comes from broadband and harmonic content, which could just as well be a signature of the test setup. I wouldn't claim it detects bearing damage.
+- **Adding current to vibration did not help reliably:** 0.563 to 0.605, depending on the model.
+
+**Answer to the question:** on this data, no. Neither sensor alone nor the two together identify damage on an unseen bearing well enough to act on; the best is 0.66 per recording. The plant would need more bearings per fault class before trusting a classifier. Stage 2's approach, learning each machine's own healthy baseline, avoids the problem because it never has to generalise across bearings.
+
+**Audit note:** the motor has 4 pole pairs. The current's fundamental sits at exactly 4× shaft speed (100.0 Hz at 1,500 rpm, 60.0 Hz at 900 rpm). The current features are built around this, so a test checks it on the raw files.
+
+Reproduce: `python scripts/paderborn_features.py`, then `python scripts/run_paderborn.py`. The 15 archives (2.5 GB, 13 GB unpacked) come from the [KAt-DataCenter](https://groups.uni-paderborn.de/kat/BearingDataCenter/) and are unpacked under `data/raw/paderborn/`.
+
 ## Stage 4 results: a CNN on raw vibration, then the same network in int8 C
 
 ### 4a. 1D CNN vs the stage 1 features
@@ -212,7 +246,8 @@ Stage 2 needs the IMS archive (1.1 GB, about 6 GB unpacked) from the [NASA progn
 | 1 | CWRU diagnosis, baselines, data audit | done |
 | 2 | Early warning on NASA IMS run-to-failure: autoencoder and Isolation Forest trained on healthy data, lead time and false alarms vs the RMS alarm | done |
 | 2b | Threshold that follows slow drift (the source of nearly all RMS false alarms); RMS and Isolation Forest voting together | done |
-| 3 | Paderborn: vibration vs motor current vs both; train on one dataset, test on another | planned |
+| 3 | Paderborn: vibration vs motor current vs both, tested on unseen bearings | done |
+| 3b | Train on one dataset, test on another (CWRU and Paderborn use different bearings and rigs) | planned |
 | 4 | 1D CNN, int8 quantisation, ONNX Runtime latency, int8 C kernel sized for a Cortex-M4 (no physical board) | done |
 | 5 | React + FastAPI dashboard: machine health, alarm timeline, which band triggered each alarm | planned |
 

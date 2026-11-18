@@ -53,6 +53,18 @@ A threshold that adapts to every snapshot would follow a fault upward and switch
 
 The band was chosen before looking at any failure data. It sits above the shaft harmonics and below the anti-alias roll-off near 10 kHz. Picking it from the failure period (where the defect resonance is) would leak the answer into the features.
 
+## Stage 3: folds by bearing, not by recording or operating condition
+
+On CWRU, holding out a motor load was the honest split, because every load used the same seeded bearings. Paderborn has 15 different physical bearings, so the question a plant cares about is: does it work on a bearing it has never seen? Every fold holds out one bearing of each class. Splitting by operating condition would still put the same bearing on both sides.
+
+## Stage 3: current features relative to the fundamental
+
+Motor load sets the current amplitude. At 0.1 Nm the RMS current is about half that at 0.7 Nm. A classifier given absolute current levels would learn the load setting. Every current feature is a power ratio to the fundamental, at 4× shaft speed for this 4-pole-pair motor. That leaves only the shape of the spectrum.
+
+## Stage 3: a linear model next to gradient boosting
+
+With 12 training bearings, the risk is memorising bearings, not underfitting. Logistic regression with strong L2 regularisation (C = 0.1) can't build bearing-specific rules the way trees can. It came out best or level on the feature sets that generalise. It is reported next to gradient boosting rather than replacing it, so the effect of model flexibility can be seen.
+
 ## Stage 4: a wide first kernel
 
 A 64-tap first kernel with stride 8 covers 5 ms of signal, long enough to span the ringing of one impact. It also cuts the sequence from 2,048 to 249 positions in the first layer, so most of the compute is spent once. After that, three 3-tap layers are cheap. The result is 22k parameters and 1.14 M multiply-accumulates, small enough for a Cortex-M4 without pruning.

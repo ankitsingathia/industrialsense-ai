@@ -63,12 +63,16 @@ def envelope_features(
     band: tuple[float, float] = (2000.0, 5000.0),
     tol: float = 0.04,
     orders: dict[str, float] | None = None,
+    min_halfwidth_hz: float = 0.0,
 ) -> np.ndarray:
     """Envelope-spectrum energy at the first three harmonics of each defect
     frequency, each relative to the total envelope energy so that the feature
     does not simply re-measure loudness. tol is the +/- fraction searched
     around each expected line, to absorb slip and speed error. orders defaults
     to the CWRU bearing; pass another bearing's orders in the same key order.
+    min_halfwidth_hz widens the search window for low lines that would
+    otherwise fall between FFT bins (Paderborn passes one bin width; the
+    default 0 keeps stage 1 unchanged).
     """
     freqs, spec = envelope_spectrum(w, fs, band)
     total = np.sqrt((spec**2).sum(axis=1)) + 1e-12
@@ -77,9 +81,11 @@ def envelope_features(
     for order in (orders or DEFECT_ORDERS).values():
         for h in (1, 2, 3):
             f0 = order * shaft * h
-            m = (freqs >= f0 * (1 - tol)) & (freqs <= f0 * (1 + tol))
+            hw = max(f0 * tol, min_halfwidth_hz)
+            m = (freqs >= f0 - hw) & (freqs <= f0 + hw)
             cols.append(spec[:, m].max(axis=1) / total if m.any() else np.zeros(len(w)))
-    m = (freqs >= shaft * (1 - tol)) & (freqs <= shaft * (1 + tol))
+    hw = max(shaft * tol, min_halfwidth_hz)
+    m = (freqs >= shaft - hw) & (freqs <= shaft + hw)
     cols.append(spec[:, m].max(axis=1) / total)
     cols.append(total)
     return np.column_stack(cols)
