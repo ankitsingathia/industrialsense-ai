@@ -1,0 +1,659 @@
+{
+  "ref_hours": 48.0,
+  "persist": 3,
+  "summary": {
+    "rms": {
+      "lead_time_h": {
+        "test1/b3": 86.4,
+        "test1/b4": 158.6,
+        "test2/b1": 74.8,
+        "test3/b3": 81.2
+      },
+      "false_alarms": 117,
+      "healthy_bearing_days": 137.5,
+      "false_alarms_per_week": 5.96
+    },
+    "iforest": {
+      "lead_time_h": {
+        "test1/b3": 78.9,
+        "test1/b4": 0.0,
+        "test2/b1": 74.8,
+        "test3/b3": 59.0
+      },
+      "false_alarms": 13,
+      "healthy_bearing_days": 145.0,
+      "false_alarms_per_week": 0.63
+    },
+    "autoencoder": {
+      "lead_time_h": {
+        "test1/b3": 82.4,
+        "test1/b4": 156.4,
+        "test2/b1": 74.8,
+        "test3/b3": 352.3
+      },
+      "false_alarms": 202,
+      "healthy_bearing_days": 103.8,
+      "false_alarms_per_week": 13.62
+    }
+  },
+  "rows": [
+    {
+      "test": "test1",
+      "bearing": 1,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 1,
+      "days": 7.965277777777325,
+      "share_in_alarm": 0.018308631211857017
+    },
+    {
+      "test": "test1",
+      "bearing": 2,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 0,
+      "days": 7.965277777777325,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test1",
+      "bearing": 3,
+      "detector": "rms",
+      "failed": true,
+      "mode": "inner race",
+      "lead_time_h": 86.38333333333333,
+      "latched_at_h": 741.1755555555555,
+      "test_hours": 827.5588888888889
+    },
+    {
+      "test": "test1",
+      "bearing": 4,
+      "detector": "rms",
+      "failed": true,
+      "mode": "roller",
+      "lead_time_h": 158.5630555555556,
+      "latched_at_h": 668.9958333333333,
+      "test_hours": 827.5588888888889
+    },
+    {
+      "test": "test1",
+      "bearing": 1,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 3,
+      "days": 10.736111111110501,
+      "share_in_alarm": 0.007761966364812419
+    },
+    {
+      "test": "test1",
+      "bearing": 2,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 4,
+      "days": 10.736111111110501,
+      "share_in_alarm": 0.00258732212160414
+    },
+    {
+      "test": "test1",
+      "bearing": 3,
+      "detector": "iforest",
+      "failed": true,
+      "mode": "inner race",
+      "lead_time_h": 78.88333333333333,
+      "latched_at_h": 748.6755555555555,
+      "test_hours": 827.5588888888889
+    },
+    {
+      "test": "test1",
+      "bearing": 4,
+      "detector": "iforest",
+      "failed": true,
+      "mode": "roller",
+      "lead_time_h": 0.0,
+      "latched_at_h": null,
+      "test_hours": 827.5588888888889
+    },
+    {
+      "test": "test1",
+      "bearing": 1,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 17,
+      "days": 7.999999999999545,
+      "share_in_alarm": 0.028645833333333332
+    },
+    {
+      "test": "test1",
+      "bearing": 2,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 0,
+      "days": 7.999999999999545,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test1",
+      "bearing": 3,
+      "detector": "autoencoder",
+      "failed": true,
+      "mode": "inner race",
+      "lead_time_h": 82.38333333333333,
+      "latched_at_h": 745.1755555555555,
+      "test_hours": 827.5588888888889
+    },
+    {
+      "test": "test1",
+      "bearing": 4,
+      "detector": "autoencoder",
+      "failed": true,
+      "mode": "roller",
+      "lead_time_h": 156.39694444444444,
+      "latched_at_h": 671.1619444444444,
+      "test_hours": 827.5588888888889
+    },
+    {
+      "test": "test2",
+      "bearing": 1,
+      "detector": "rms",
+      "failed": true,
+      "mode": "outer race",
+      "lead_time_h": 74.83333333333334,
+      "latched_at_h": 89.0,
+      "test_hours": 163.83333333333334
+    },
+    {
+      "test": "test2",
+      "bearing": 2,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test2",
+      "bearing": 3,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test2",
+      "bearing": 4,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test2",
+      "bearing": 1,
+      "detector": "iforest",
+      "failed": true,
+      "mode": "outer race",
+      "lead_time_h": 74.83333333333334,
+      "latched_at_h": 89.0,
+      "test_hours": 163.83333333333334
+    },
+    {
+      "test": "test2",
+      "bearing": 2,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 1,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0040650406504065045
+    },
+    {
+      "test": "test2",
+      "bearing": 3,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test2",
+      "bearing": 4,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test2",
+      "bearing": 1,
+      "detector": "autoencoder",
+      "failed": true,
+      "mode": "outer race",
+      "lead_time_h": 74.83333333333334,
+      "latched_at_h": 89.0,
+      "test_hours": 163.83333333333334
+    },
+    {
+      "test": "test2",
+      "bearing": 2,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 1,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0040650406504065045
+    },
+    {
+      "test": "test2",
+      "bearing": 3,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test2",
+      "bearing": 4,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 0,
+      "days": 1.7083333333333364,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test3",
+      "bearing": 1,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 0,
+      "days": 38.81944444444224,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test3",
+      "bearing": 2,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 0,
+      "days": 38.81944444444224,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test3",
+      "bearing": 3,
+      "detector": "rms",
+      "failed": true,
+      "mode": "outer race",
+      "lead_time_h": 81.1827777777778,
+      "latched_at_h": 992.0697222222223,
+      "test_hours": 1073.2525
+    },
+    {
+      "test": "test3",
+      "bearing": 4,
+      "detector": "rms",
+      "failed": false,
+      "onsets": 116,
+      "days": 38.81944444444224,
+      "share_in_alarm": 0.4778175313059034
+    },
+    {
+      "test": "test3",
+      "bearing": 1,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 2,
+      "days": 39.45138888888665,
+      "share_in_alarm": 0.0003520506953001232
+    },
+    {
+      "test": "test3",
+      "bearing": 2,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 0,
+      "days": 39.45138888888665,
+      "share_in_alarm": 0.0
+    },
+    {
+      "test": "test3",
+      "bearing": 3,
+      "detector": "iforest",
+      "failed": true,
+      "mode": "outer race",
+      "lead_time_h": 59.0,
+      "latched_at_h": 1014.2525,
+      "test_hours": 1073.2525
+    },
+    {
+      "test": "test3",
+      "bearing": 4,
+      "detector": "iforest",
+      "failed": false,
+      "onsets": 3,
+      "days": 39.45138888888665,
+      "share_in_alarm": 0.003696532300651294
+    },
+    {
+      "test": "test3",
+      "bearing": 1,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 105,
+      "days": 27.562499999998433,
+      "share_in_alarm": 0.09019904257999496
+    },
+    {
+      "test": "test3",
+      "bearing": 2,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 45,
+      "days": 27.562499999998433,
+      "share_in_alarm": 0.8647014361300076
+    },
+    {
+      "test": "test3",
+      "bearing": 3,
+      "detector": "autoencoder",
+      "failed": true,
+      "mode": "outer race",
+      "lead_time_h": 352.34944444444454,
+      "latched_at_h": 720.9030555555555,
+      "test_hours": 1073.2525
+    },
+    {
+      "test": "test3",
+      "bearing": 4,
+      "detector": "autoencoder",
+      "failed": false,
+      "onsets": 34,
+      "days": 27.562499999998433,
+      "share_in_alarm": 0.46611237087427565
+    }
+  ],
+  "sensitivity": {
+    "ref24h_persist1": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 657.0,
+          "test1/b4": 657.0,
+          "test2/b1": 78.5,
+          "test3/b3": 79.5
+        },
+        "false_alarms": 354,
+        "healthy_bearing_days": 127.5,
+        "false_alarms_per_week": 19.44
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 657.0,
+          "test1/b4": 657.0,
+          "test2/b1": 75.2,
+          "test3/b3": 50.2
+        },
+        "false_alarms": 1131,
+        "healthy_bearing_days": 130.7,
+        "false_alarms_per_week": 60.57
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 807.1,
+          "test1/b4": 656.3,
+          "test2/b1": 83.3,
+          "test3/b3": 148.7
+        },
+        "false_alarms": 1056,
+        "healthy_bearing_days": 118.1,
+        "false_alarms_per_week": 62.59
+      }
+    },
+    "ref24h_persist3": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 656.7,
+          "test1/b4": 656.7,
+          "test2/b1": 74.8,
+          "test3/b3": 73.5
+        },
+        "false_alarms": 69,
+        "healthy_bearing_days": 128.7,
+        "false_alarms_per_week": 3.75
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 656.7,
+          "test1/b4": 655.3,
+          "test2/b1": 74.3,
+          "test3/b3": 45.0
+        },
+        "false_alarms": 93,
+        "healthy_bearing_days": 131.5,
+        "false_alarms_per_week": 4.95
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 656.7,
+          "test1/b4": 653.8,
+          "test2/b1": 74.8,
+          "test3/b3": 101.7
+        },
+        "false_alarms": 407,
+        "healthy_bearing_days": 125.2,
+        "false_alarms_per_week": 22.75
+      }
+    },
+    "ref24h_persist6": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 656.2,
+          "test1/b4": 656.2,
+          "test2/b1": 74.3,
+          "test3/b3": 63.5
+        },
+        "false_alarms": 26,
+        "healthy_bearing_days": 129.2,
+        "false_alarms_per_week": 1.41
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 656.2,
+          "test1/b4": 249.2,
+          "test2/b1": 73.8,
+          "test3/b3": 41.3
+        },
+        "false_alarms": 11,
+        "healthy_bearing_days": 132.0,
+        "false_alarms_per_week": 0.58
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 656.2,
+          "test1/b4": 270.5,
+          "test2/b1": 74.3,
+          "test3/b3": 94.2
+        },
+        "false_alarms": 217,
+        "healthy_bearing_days": 126.3,
+        "false_alarms_per_week": 12.03
+      }
+    },
+    "ref48h_persist1": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 96.4,
+          "test1/b4": 198.6,
+          "test2/b1": 78.5,
+          "test3/b3": 107.5
+        },
+        "false_alarms": 255,
+        "healthy_bearing_days": 131.6,
+        "false_alarms_per_week": 13.57
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 87.5,
+          "test1/b4": 0.0,
+          "test2/b1": 79.2,
+          "test3/b3": 59.3
+        },
+        "false_alarms": 234,
+        "healthy_bearing_days": 143.6,
+        "false_alarms_per_week": 11.4
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 86.9,
+          "test1/b4": 183.3,
+          "test2/b1": 80.3,
+          "test3/b3": 516.5
+        },
+        "false_alarms": 917,
+        "healthy_bearing_days": 81.6,
+        "false_alarms_per_week": 78.65
+      }
+    },
+    "ref48h_persist6": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 83.4,
+          "test1/b4": 156.6,
+          "test2/b1": 74.3,
+          "test3/b3": 77.3
+        },
+        "false_alarms": 74,
+        "healthy_bearing_days": 138.1,
+        "false_alarms_per_week": 3.75
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 54.4,
+          "test1/b4": 0.0,
+          "test2/b1": 74.3,
+          "test3/b3": 58.5
+        },
+        "false_alarms": 3,
+        "healthy_bearing_days": 146.9,
+        "false_alarms_per_week": 0.14
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 54.4,
+          "test1/b4": 155.9,
+          "test2/b1": 74.3,
+          "test3/b3": 273.0
+        },
+        "false_alarms": 80,
+        "healthy_bearing_days": 113.7,
+        "false_alarms_per_week": 4.92
+      }
+    },
+    "ref96h_persist1": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 102.7,
+          "test1/b4": 156.6,
+          "test2/b1": 66.7,
+          "test3/b3": 182.5
+        },
+        "false_alarms": 368,
+        "healthy_bearing_days": 109.9,
+        "false_alarms_per_week": 23.44
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 90.2,
+          "test1/b4": 177.8,
+          "test2/b1": 53.5,
+          "test3/b3": 85.2
+        },
+        "false_alarms": 1052,
+        "healthy_bearing_days": 123.2,
+        "false_alarms_per_week": 59.76
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 86.9,
+          "test1/b4": 192.8,
+          "test2/b1": 67.8,
+          "test3/b3": 577.3
+        },
+        "false_alarms": 470,
+        "healthy_bearing_days": 58.8,
+        "false_alarms_per_week": 55.97
+      }
+    },
+    "ref96h_persist3": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 97.5,
+          "test1/b4": 148.6,
+          "test2/b1": 63.3,
+          "test3/b3": 109.3
+        },
+        "false_alarms": 129,
+        "healthy_bearing_days": 120.2,
+        "false_alarms_per_week": 7.52
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 82.4,
+          "test1/b4": 158.3,
+          "test2/b1": 46.7,
+          "test3/b3": 75.3
+        },
+        "false_alarms": 263,
+        "healthy_bearing_days": 125.8,
+        "false_alarms_per_week": 14.64
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 59.2,
+          "test1/b4": 183.1,
+          "test2/b1": 67.8,
+          "test3/b3": 450.7
+        },
+        "false_alarms": 109,
+        "healthy_bearing_days": 75.4,
+        "false_alarms_per_week": 10.12
+      }
+    },
+    "ref96h_persist6": {
+      "rms": {
+        "lead_time_h": {
+          "test1/b3": 89.0,
+          "test1/b4": 148.1,
+          "test2/b1": 62.8,
+          "test3/b3": 95.3
+        },
+        "false_alarms": 65,
+        "healthy_bearing_days": 122.0,
+        "false_alarms_per_week": 3.73
+      },
+      "iforest": {
+        "lead_time_h": {
+          "test1/b3": 58.7,
+          "test1/b4": 156.4,
+          "test2/b1": 46.2,
+          "test3/b3": 60.7
+        },
+        "false_alarms": 132,
+        "healthy_bearing_days": 126.9,
+        "false_alarms_per_week": 7.28
+      },
+      "autoencoder": {
+        "lead_time_h": {
+          "test1/b3": 49.6,
+          "test1/b4": 173.8,
+          "test2/b1": 67.7,
+          "test3/b3": 358.0
+        },
+        "false_alarms": 61,
+        "healthy_bearing_days": 87.8,
+        "false_alarms_per_week": 4.86
+      }
+    }
+  }
+}

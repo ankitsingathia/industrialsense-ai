@@ -57,18 +57,24 @@ ENV_NAMES = [f"{d}_h{h}" for d in ("BPFI", "BPFO", "BSF", "FTF") for h in (1, 2,
 
 
 def envelope_features(
-    w: np.ndarray, fs: int, rpm: float, band: tuple[float, float] = (2000.0, 5000.0), tol: float = 0.04
+    w: np.ndarray,
+    fs: int,
+    rpm: float,
+    band: tuple[float, float] = (2000.0, 5000.0),
+    tol: float = 0.04,
+    orders: dict[str, float] | None = None,
 ) -> np.ndarray:
     """Envelope-spectrum energy at the first three harmonics of each defect
     frequency, each relative to the total envelope energy so that the feature
     does not simply re-measure loudness. tol is the +/- fraction searched
-    around each expected line, to absorb slip and speed error.
+    around each expected line, to absorb slip and speed error. orders defaults
+    to the CWRU bearing; pass another bearing's orders in the same key order.
     """
     freqs, spec = envelope_spectrum(w, fs, band)
     total = np.sqrt((spec**2).sum(axis=1)) + 1e-12
     shaft = rpm / 60.0
     cols = []
-    for order in DEFECT_ORDERS.values():
+    for order in (orders or DEFECT_ORDERS).values():
         for h in (1, 2, 3):
             f0 = order * shaft * h
             m = (freqs >= f0 * (1 - tol)) & (freqs <= f0 * (1 + tol))
